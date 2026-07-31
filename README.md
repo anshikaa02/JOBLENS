@@ -1,75 +1,52 @@
-# React + TypeScript + Vite
+# JobLens — Phase 1 & 2 (TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI resume analyzer & job matcher. This drop covers **Phase 1 (project setup)**
+and **Phase 2 (design system)**, written in **TypeScript**. Backend, auth, and
+real feature pages come in later phases.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open http://localhost:5173 — you'll see the placeholder landing page, and
+`/app` for the dashboard shell (real data lands in Phase 5).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Design direction
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+The app is styled as a dark "instrument panel" that measures resumes — not a
+generic bright-blue SaaS dashboard. Resume/job-description content sits on a
+warm paper surface inset into the dark frame (see `Card variant="paper"`).
+The accent is a muted brass/gold, evoking a highlighter or measuring tool. The
+signature component is `ScoreGauge` — a tick-marked instrument dial (not a
+generic circular progress bar) used for ATS score and match %.
+
+Fonts: Fraunces (display), IBM Plex Sans (body), IBM Plex Mono (data/scores).
+
+## Structure
 
 ```
+frontend/
+  src/
+    components/
+      ui/       Button.tsx, Card.tsx, ScoreGauge.tsx — the reusable design system
+      layout/   Sidebar.tsx, Navbar.tsx, AppLayout.tsx — the authenticated app shell
+    pages/      Landing.tsx, Dashboard.tsx (placeholders, filled out in later phases)
+    lib/utils.ts  cn() classname helper
+    index.css     Design tokens (@theme block) — colors, fonts, radii
+    vite-env.d.ts Vite's ambient type declarations
+  tsconfig.json       references tsconfig.app.json + tsconfig.node.json
+  tsconfig.app.json   compiler options for src/ (strict mode on)
+  tsconfig.node.json  compiler options for vite.config.ts
+```
+
+`npm run build` runs `tsc -b` (type-check) before `vite build`, so type errors
+fail the build the same way they would in a real CI pipeline.
+
+## Next phases
+
+Reply with "continue" or "Phase 3" to get the full landing page (hero,
+features, how it works, testimonials, footer, CTA) built out next.
