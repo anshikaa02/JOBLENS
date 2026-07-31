@@ -54,8 +54,7 @@ JobLens/
 ```
 
 ##  Status
-
-🚧 Work in Progress — Currently under active development.
+Work in Progress — Currently under active development.
 
 ##  Future Scope
 
@@ -65,6 +64,3 @@ JobLens/
 - Job application tracking
 - Resume tailoring for specific job roles
 
-## 👩‍💻 Author
-
-Anshika
