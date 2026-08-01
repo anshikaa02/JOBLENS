@@ -1,15 +1,31 @@
-import { Outlet, useMatches, type UIMatch } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-interface RouteHandle {
-  title?: string;
+/**
+ * Maps a route prefix to the page title shown in the top navbar.
+ * We do this with a plain lookup (rather than react-router's `useMatches`)
+ * because `useMatches` only works with the newer data-router setup
+ * (`createBrowserRouter`) — this app uses the classic <BrowserRouter>/<Routes>
+ * pattern, where `useMatches` throws at runtime.
+ */
+const ROUTE_TITLES: { prefix: string; title: string }[] = [
+  { prefix: "/app/analyzer", title: "Resume Analyzer" },
+  { prefix: "/app/matcher", title: "Job Matcher" },
+  { prefix: "/app/career-ai", title: "Career AI" },
+  { prefix: "/app/history", title: "History" },
+  { prefix: "/app/settings", title: "Settings" },
+  { prefix: "/app", title: "Dashboard" },
+];
+
+function titleForPath(pathname: string): string {
+  const match = ROUTE_TITLES.find((r) => pathname.startsWith(r.prefix));
+  return match?.title ?? "Dashboard";
 }
 
 export default function AppLayout() {
-  const matches = useMatches() as UIMatch<unknown, RouteHandle>[];
-  const current = [...matches].reverse().find((m) => m.handle?.title);
-  const title = current?.handle?.title ?? "Dashboard";
+  const location = useLocation();
+  const title = titleForPath(location.pathname);
 
   return (
     <div className="flex min-h-screen bg-ink-950">

@@ -2,18 +2,14 @@ import { Card, CardHeader, CardTitle, CardBody } from "@/components/ui/Card";
 import ScoreGauge from "@/components/ui/ScoreGauge";
 import Button from "@/components/ui/Button";
 import { Upload, FileText } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  const firstName = user?.name.split(" ")[0] ?? "there";
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <Card className="lg:col-span-2">
         <CardHeader>
           <div>
-            <CardTitle>Welcome back, {firstName}</CardTitle>
+            <CardTitle>Welcome back, Riya</CardTitle>
             <p className="text-sm text-text-muted mt-1">
               Full dashboard data (recent activity, quick actions) wires up in Phase 5.
             </p>

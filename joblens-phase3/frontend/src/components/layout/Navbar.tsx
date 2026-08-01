@@ -1,26 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { Bell, Search, LogOut } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import { Bell, Search } from "lucide-react";
 
 interface NavbarProps {
   title?: string;
 }
 
-function initialsFor(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const initials = parts.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "");
-  return initials.join("") || "?";
-}
-
 export default function Navbar({ title = "Dashboard" }: NavbarProps) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate("/", { replace: true });
-  }
-
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-ink-800 bg-ink-950/80 px-6 backdrop-blur">
       <h1 className="font-display text-xl tracking-tight text-text-hi">{title}</h1>
@@ -39,19 +23,9 @@ export default function Navbar({ title = "Dashboard" }: NavbarProps) {
         >
           <Bell size={16} />
         </button>
-        <div
-          className="h-8 w-8 rounded-full bg-brass-500/20 border border-brass-500/40 flex items-center justify-center font-mono text-xs text-brass-400"
-          title={user?.email}
-        >
-          {user ? initialsFor(user.name) : "?"}
+        <div className="h-8 w-8 rounded-full bg-brass-500/20 border border-brass-500/40 flex items-center justify-center font-mono text-xs text-brass-400">
+          RS
         </div>
-        <button
-          aria-label="Log out"
-          onClick={handleLogout}
-          className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-control)] text-text-muted hover:bg-ink-800 hover:text-signal-bad transition-colors"
-        >
-          <LogOut size={16} />
-        </button>
       </div>
     </header>
   );
