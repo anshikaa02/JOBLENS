@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { ScanText, Target, Sparkles, History, Settings } from "lucide-react";
+import { Target, Sparkles, History, Settings } from "lucide-react";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
+import ResumeAnalyzer from "@/pages/ResumeAnalyzer";
 import ComingSoon from "@/pages/ComingSoon";
 import AppLayout from "@/components/layout/AppLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -24,17 +25,7 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route
-          path="analyzer"
-          element={
-            <ComingSoon
-              icon={ScanText}
-              title="Resume Analyzer"
-              description="Upload a PDF and get a full ATS score breakdown with strengths, weaknesses, and missing skills."
-              phase="Phase 6"
-            />
-          }
-        />
+        <Route path="analyzer" element={<ResumeAnalyzer />} />
         <Route
           path="matcher"
           element={

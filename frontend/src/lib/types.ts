@@ -29,3 +29,27 @@ export interface ActivityItem {
   label: string;
   timestamp: string; // ISO date string
 }
+
+/**
+ * Resume analysis types — these mirror backend/app/schemas/resume.py
+ * exactly. If you change one side, change the other, or the shapes
+ * will silently drift apart (nothing enforces this across the language
+ * boundary — worth knowing as a limitation of this architecture).
+ */
+export interface ScoreBreakdownItem {
+  label: string;
+  points_earned: number;
+  points_possible: number;
+  passed: boolean;
+}
+
+export interface ResumeAnalysis {
+  file_name: string;
+  word_count: number;
+  ats_score: number;
+  breakdown: ScoreBreakdownItem[];
+  strengths: string[];
+  weaknesses: string[];
+  missing_skills: string[];
+  suggestions: string[];
+}

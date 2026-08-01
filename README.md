@@ -1,8 +1,30 @@
-# JobLens — Phase 1 & 2 (TypeScript)
+# JobLens — Phase 1–6 (TypeScript + FastAPI)
 
-AI resume analyzer & job matcher. This drop covers **Phase 1 (project setup)**
-and **Phase 2 (design system)**, written in **TypeScript**. Backend, auth, and
-real feature pages come in later phases.
+AI resume analyzer & job matcher. Covers Phases 1–6: setup, design system,
+landing page, authentication (mocked), dashboard (mock data), and the
+**Resume Analyzer — the first real, working feature**, backed by an actual
+FastAPI backend doing real PDF parsing and scoring (no mocking here).
+
+## Two servers now run together
+
+- `frontend/` — Vite dev server, port 5173
+- `backend/` — FastAPI/uvicorn, port 8000
+
+Both must be running for the Resume Analyzer page to work. See
+`backend/README.md` for backend setup instructions (Python venv, pip
+install, uvicorn).
+
+## ⚠️ Still-mocked data layers
+
+1. **Auth** (`frontend/src/lib/auth-context.tsx`) — unsigned token in
+   localStorage. Real JWT auth arrives in Phase 9.
+2. **Dashboard data** (`frontend/src/lib/mock-data.ts`) — hardcoded resume/
+   match/activity data. Real API call arrives in Phase 9.
+
+**Resume analysis is NOT mocked** — it's a real FastAPI endpoint doing real
+PDF text extraction and real rule-based scoring. See
+`backend/app/services/ats_scorer.py` for why this phase used a rule-based
+scorer rather than an LLM call (Gemini AI features are Phase 8).
 
 ## Run it
 
@@ -32,19 +54,32 @@ Fonts: Fraunces (display), IBM Plex Sans (body), IBM Plex Mono (data/scores).
 frontend/
   src/
     components/
-      ui/       Button.tsx, Card.tsx, ScoreGauge.tsx — the reusable design system
-      layout/   Sidebar.tsx, Navbar.tsx, AppLayout.tsx — the authenticated app shell
-    pages/      Landing.tsx, Dashboard.tsx (placeholders, filled out in later phases)
-    lib/utils.ts  cn() classname helper
-    index.css     Design tokens (@theme block) — colors, fonts, radii
-    vite-env.d.ts Vite's ambient type declarations
-  tsconfig.json       references tsconfig.app.json + tsconfig.node.json
-  tsconfig.app.json   compiler options for src/ (strict mode on)
-  tsconfig.node.json  compiler options for vite.config.ts
+      ui/       Button, Card, Input, ScoreGauge, Badge, ProgressBar, FileDropzone
+      layout/   Sidebar, Navbar, AppLayout, Footer
+      landing/  SiteNav, Hero, Features, HowItWorks, Testimonials, CTA
+      auth/     ProtectedRoute
+    pages/
+      Landing, Login, Signup, Dashboard
+      ResumeAnalyzer.tsx   real feature — uploads to the FastAPI backend
+      ComingSoon.tsx        placeholder for matcher/career-ai/history/settings
+    hooks/useDashboardData.ts
+    lib/
+      types.ts       includes ResumeAnalysis, matching backend/app/schemas/resume.py
+      api.ts         axios instance, baseURL "/api"
+      mock-data.ts, auth-context.tsx, validation.ts, format.ts, utils.ts
+
+backend/
+  app/
+    main.py                    FastAPI app + CORS
+    routers/resume.py          POST /api/resume/analyze
+    services/pdf_parser.py     pdfplumber text extraction
+    services/ats_scorer.py     rule-based scoring (see its docstring)
+    schemas/resume.py          Pydantic models — the frontend/backend contract
+  requirements.txt
+  README.md
 ```
 
-`npm run build` runs `tsc -b` (type-check) before `vite build`, so type errors
-fail the build the same way they would in a real CI pipeline.
+`npm run build` runs `tsc -b` (type-check) before `vite build`.
 
 ## Next phases
 
