@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import resume
+from app.routers import resume, match
 
 app = FastAPI(
     title="JobLens API",
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(resume.router)
+app.include_router(match.router)
 
 
 @app.get("/api/health")

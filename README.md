@@ -1,9 +1,9 @@
-# JobLens — Phase 1–6 (TypeScript + FastAPI)
+# JobLens — Phase 1–7 (TypeScript + FastAPI)
 
-AI resume analyzer & job matcher. Covers Phases 1–6: setup, design system,
-landing page, authentication (mocked), dashboard (mock data), and the
-**Resume Analyzer — the first real, working feature**, backed by an actual
-FastAPI backend doing real PDF parsing and scoring (no mocking here).
+AI resume analyzer & job matcher. Covers Phases 1–7: setup, design system,
+landing page, authentication (mocked), dashboard (mock data), Resume
+Analyzer (real, rule-based ATS scoring), and now **Job Matcher — real
+TF-IDF + cosine similarity, no mocking.**
 
 ## Two servers now run together
 
@@ -71,10 +71,17 @@ frontend/
 backend/
   app/
     main.py                    FastAPI app + CORS
-    routers/resume.py          POST /api/resume/analyze
-    services/pdf_parser.py     pdfplumber text extraction
-    services/ats_scorer.py     rule-based scoring (see its docstring)
-    schemas/resume.py          Pydantic models — the frontend/backend contract
+    routers/
+      resume.py                POST /api/resume/analyze
+      match.py                 POST /api/match/analyze
+    services/
+      pdf_parser.py            pdfplumber text extraction
+      ats_scorer.py             rule-based scoring (see its docstring)
+      text_matcher.py          TF-IDF + cosine similarity (see its docstring
+                                 for why keyword ranking uses a SEPARATE
+                                 CountVectorizer, not the same TF-IDF matrix)
+    schemas/
+      resume.py, match.py       Pydantic models — the frontend/backend contract
   requirements.txt
   README.md
 ```

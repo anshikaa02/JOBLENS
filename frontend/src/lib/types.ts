@@ -53,3 +53,10 @@ export interface ResumeAnalysis {
   missing_skills: string[];
   suggestions: string[];
 }
+
+/** Mirrors backend/app/schemas/match.py exactly. */
+export interface MatchResult {
+  match_score: number;
+  matched_keywords: string[];
+  missing_keywords: string[];
+}

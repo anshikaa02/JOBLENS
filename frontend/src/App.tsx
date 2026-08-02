@@ -1,10 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import { Target, Sparkles, History, Settings } from "lucide-react";
+import { Sparkles, History, Settings } from "lucide-react";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 import ResumeAnalyzer from "@/pages/ResumeAnalyzer";
+import JobMatcher from "@/pages/JobMatcher";
 import ComingSoon from "@/pages/ComingSoon";
 import AppLayout from "@/components/layout/AppLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -26,17 +27,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="analyzer" element={<ResumeAnalyzer />} />
-        <Route
-          path="matcher"
-          element={
-            <ComingSoon
-              icon={Target}
-              title="Job Matcher"
-              description="Paste a job description and see your match percentage, powered by TF-IDF and cosine similarity."
-              phase="Phase 7"
-            />
-          }
-        />
+        <Route path="matcher" element={<JobMatcher />} />
         <Route
           path="career-ai"
           element={
