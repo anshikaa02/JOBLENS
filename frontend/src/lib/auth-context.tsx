@@ -5,8 +5,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { api } from "@/lib/api";
 
 export interface AuthUser {
+  id: string;
   name: string;
   email: string;
 }
@@ -20,30 +22,31 @@ interface AuthContextValue {
   logout: () => void;
 }
 
+interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+}
+
 const STORAGE_KEY = "joblens_auth";
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 /**
- * MOCK AUTH — Phase 4 scaffolding only.
+ * REAL AUTH — Phase 9.
  *
- * There's no backend yet (that's Phase 9), so login/signup here just
- * validate input, fabricate a token, and persist to localStorage. There is
- * NO real password checking against a database and NO cryptographic
- * signing — anyone can open devtools and forge this token. Do not treat
- * this as secure; it exists so the UI, routing, and protected-route logic
- * can be built and tested end to end.
+ * Replaces the Phase 4 mock (unsigned localStorage token, no server
+ * verification). login()/signup() now call the real FastAPI backend
+ * (POST /api/auth/login, /api/auth/signup), which returns a real
+ * server-signed JWT. On mount, instead of blindly trusting whatever is in
+ * localStorage, this calls GET /api/auth/me to confirm the token is still
+ * valid server-side — a token could have expired, or the backend could
+ * have restarted with a different JWT_SECRET, invalidating old tokens.
  *
- * When Phase 9 lands: replace the bodies of login()/signup() below with
- * real `axios.post('/api/auth/login', ...)` calls that return a real
- * server-signed JWT, and delete the `fabricateToken` helper. Every
- * component that calls useAuth() stays exactly the same.
+ * Every component using useAuth() is completely unchanged from Phase 4 —
+ * this is the "swap the implementation, keep the interface" idea
+ * mentioned back when the mock was built.
  */
-function fabricateToken(email: string): string {
-  const payload = { email, iat: Date.now() };
-  return `mock.${btoa(JSON.stringify(payload))}.unsigned`;
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -51,36 +54,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as { user: AuthUser; token: string };
-        setUser(parsed.user);
-        setToken(parsed.token);
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
+    if (!raw) {
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    let storedToken: string;
+    try {
+      storedToken = (JSON.parse(raw) as { token: string }).token;
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      setIsLoading(false);
+      return;
+    }
+
+    api
+      .get<AuthUser>("/auth/me")
+      .then((res) => {
+        setUser(res.data);
+        setToken(storedToken);
+      })
+      .catch(() => {
+        // Token rejected server-side (expired, or backend restarted with a
+        // new secret) — clear it rather than keep showing a "logged in"
+        // state the backend disagrees with.
+        localStorage.removeItem(STORAGE_KEY);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  function persist(nextUser: AuthUser, nextToken: string) {
-    setUser(nextUser);
-    setToken(nextToken);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: nextUser, token: nextToken }));
+  function persist(response: TokenResponse) {
+    setUser(response.user);
+    setToken(response.access_token);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: response.access_token }));
   }
 
   async function login(email: string, password: string) {
-    if (!password) throw new Error("Password is required");
-    await new Promise((r) => setTimeout(r, 500)); // simulate network latency
-    const nextUser: AuthUser = { name: email.split("@")[0], email };
-    persist(nextUser, fabricateToken(email));
+    const response = await api.post<TokenResponse>("/auth/login", { email, password });
+    persist(response.data);
   }
 
   async function signup(name: string, email: string, password: string) {
-    if (!password) throw new Error("Password is required");
-    await new Promise((r) => setTimeout(r, 500));
-    const nextUser: AuthUser = { name, email };
-    persist(nextUser, fabricateToken(email));
+    const response = await api.post<TokenResponse>("/auth/signup", { name, email, password });
+    persist(response.data);
   }
 
   function logout() {

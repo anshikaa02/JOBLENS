@@ -1,16 +1,31 @@
-# JobLens — Phase 1–8 (TypeScript + FastAPI + Gemini)
+# JobLens — Phase 1–9 (TypeScript + FastAPI + Gemini + real auth)
 
-AI resume analyzer & job matcher. Covers Phases 1–8: setup, design system,
-landing page, authentication (mocked), dashboard (mock data), Resume
-Analyzer (real, rule-based), Job Matcher (real, TF-IDF), and now
-**Career AI — real Gemini LLM calls: bullet-point rewrites, cover
-letters, and interview question prep.**
+Covers Phases 1–9. **Phase 4's mocked auth is now fully replaced** — real
+signup/login against the backend, PBKDF2 password hashing, real
+server-signed JWTs, and session verification on page load. Still using
+local JSON file storage for user data (explicitly allowed by the original
+project spec for the MVP) — MongoDB replaces this in Phase 10.
 
-## ⚠️ Career AI needs your own Gemini API key
+## New required setup: JWT_SECRET
 
-See `backend/README.md` → "Gemini API key" section. Free tier available at
-https://aistudio.google.com/apikey. Without it, the Career AI page returns
-a clear error but the rest of the app works fine.
+Add to `backend/.env` (alongside your existing `GEMINI_API_KEY`):
+```
+JWT_SECRET=<any long random string>
+```
+Generate one with:
+```
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+Without this, the app still runs and works fully for local development —
+it falls back to an insecure default and prints a clear warning at
+startup — but you should set a real one before this ever gets deployed
+anywhere beyond your own machine.
+
+## Where user accounts are stored
+
+`backend/app/data/users.json` — created automatically on first signup,
+git-ignored (so test accounts never get committed). Passwords are never
+stored in plaintext — see `backend/app/services/security.py`.
 
 ## Two servers now run together
 
@@ -77,23 +92,32 @@ frontend/
 
 backend/
   app/
-    main.py                    FastAPI app + CORS
-    config.py                  loads GEMINI_API_KEY / GEMINI_MODEL from .env
+    main.py                    FastAPI app + CORS + JWT_SECRET startup warning
+    config.py                  loads all env vars (Gemini + JWT) from .env
+    dependencies.py            get_current_user — the auth guard for protected routes
     routers/
+      auth.py                  POST /api/auth/{signup,login}, GET /api/auth/me
       resume.py                POST /api/resume/analyze
       match.py                 POST /api/match/analyze
       career_ai.py             POST /api/career-ai/{improve-bullets,cover-letter,interview-questions}
     services/
-      pdf_parser.py            pdfplumber text extraction
-      ats_scorer.py             rule-based scoring (see its docstring)
-      text_matcher.py          TF-IDF + cosine similarity (see its docstring)
-      text_utils.py            shared bullet-point extraction (used by ats_scorer AND gemini_client)
-      gemini_client.py         the only LLM calls in the app — see its docstring for why
+      security.py              PBKDF2 password hashing + JWT create/decode (see its docstring)
+      json_store.py            generic JSON file read/write — MongoDB replaces this in Phase 10
+      user_store.py            user CRUD, built on json_store.py
+      pdf_parser.py, ats_scorer.py, text_matcher.py, text_utils.py, gemini_client.py
     schemas/
-      resume.py, match.py, career_ai.py    Pydantic models — the frontend/backend contract
-  .env.example                 copy to .env and add your Gemini key
+      auth.py, resume.py, match.py, career_ai.py
+    data/                       git-ignored — users.json lives here, created on first signup
+  .env.example                 GEMINI_API_KEY, GEMINI_MODEL, JWT_SECRET, JWT_EXPIRE_MINUTES
   requirements.txt
   README.md
+
+frontend/
+  src/lib/
+    api.ts                     axios instance + auth interceptor (attaches JWT automatically)
+                                 + extractErrorMessage() shared across pages
+    auth-context.tsx           REAL auth now — calls the backend, verifies session via /auth/me
+  ... (all Phase 1-8 files unchanged)
 ```
 
 `npm run build` runs `tsc -b` (type-check) before `vite build`.

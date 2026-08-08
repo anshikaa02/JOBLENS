@@ -7,6 +7,7 @@ import { Card, CardBody } from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth-context";
+import { extractErrorMessage } from "@/lib/api";
 import { signupSchema, type SignupValues } from "@/lib/validation";
 
 export default function Signup() {
@@ -25,8 +26,8 @@ export default function Signup() {
     try {
       await signup(values.name, values.email, values.password);
       navigate("/app", { replace: true });
-    } catch {
-      setFormError("Couldn't create your account. Try again.");
+    } catch (err) {
+      setFormError(extractErrorMessage(err, "Couldn't create your account. Try again."));
     }
   }
 

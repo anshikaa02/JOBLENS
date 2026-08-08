@@ -7,6 +7,7 @@ import { Card, CardBody } from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth-context";
+import { extractErrorMessage } from "@/lib/api";
 import { loginSchema, type LoginValues } from "@/lib/validation";
 
 export default function Login() {
@@ -28,8 +29,8 @@ export default function Login() {
     try {
       await login(values.email, values.password);
       navigate(redirectTo, { replace: true });
-    } catch {
-      setFormError("Couldn't log you in. Check your details and try again.");
+    } catch (err) {
+      setFormError(extractErrorMessage(err, "Couldn't log you in. Check your details and try again."));
     }
   }
 
