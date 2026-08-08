@@ -60,3 +60,25 @@ export interface MatchResult {
   matched_keywords: string[];
   missing_keywords: string[];
 }
+
+/** Mirrors backend/app/schemas/career_ai.py exactly. */
+export interface BulletImprovement {
+  original: string;
+  improved: string;
+  reasoning: string;
+}
+export interface BulletImprovementResponse {
+  improvements: BulletImprovement[];
+}
+
+export interface CoverLetterResponse {
+  cover_letter: string;
+}
+
+export interface InterviewQuestion {
+  question: string;
+  why_asked: string;
+}
+export interface InterviewQuestionsResponse {
+  questions: InterviewQuestion[];
+}

@@ -1,11 +1,12 @@
 import { Routes, Route } from "react-router-dom";
-import { Sparkles, History, Settings } from "lucide-react";
+import { History, Settings } from "lucide-react";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 import ResumeAnalyzer from "@/pages/ResumeAnalyzer";
 import JobMatcher from "@/pages/JobMatcher";
+import CareerAI from "@/pages/CareerAI";
 import ComingSoon from "@/pages/ComingSoon";
 import AppLayout from "@/components/layout/AppLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -28,17 +29,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="analyzer" element={<ResumeAnalyzer />} />
         <Route path="matcher" element={<JobMatcher />} />
-        <Route
-          path="career-ai"
-          element={
-            <ComingSoon
-              icon={Sparkles}
-              title="Career AI"
-              description="AI-generated resume improvements, cover letters, and interview questions, powered by Gemini."
-              phase="Phase 8"
-            />
-          }
-        />
+        <Route path="career-ai" element={<CareerAI />} />
         <Route
           path="history"
           element={

@@ -6,7 +6,8 @@ AI features (Phase 8), MongoDB (Phase 10), and full auth (Phase 9) come later.
 
 ## Setup (do this once)
 
-Requires Python 3.11+.
+Requires Python 3.11+ (3.12 confirmed working; if you're on 3.14 and hit a
+pydantic-core build error, see the main README's troubleshooting notes).
 
 ```bash
 cd backend
@@ -21,6 +22,18 @@ Then install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+### Gemini API key (required for Phase 8 — Career AI)
+
+1. Get a free key at https://aistudio.google.com/apikey
+2. Copy `.env.example` to `.env` in the `backend/` folder
+3. Paste your key in: `GEMINI_API_KEY=your_actual_key_here`
+4. `.env` is git-ignored — never commit it
+
+Without this key, every other feature (Resume Analyzer, Job Matcher) still
+works fully — only the Career AI page's three features need it, and they'll
+return a clear "GEMINI_API_KEY is not set" error instead of crashing if
+it's missing.
 
 ## Run it
 

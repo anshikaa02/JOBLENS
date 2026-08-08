@@ -17,10 +17,10 @@ sub-score independently unit-testable.
 import re
 
 from app.schemas.resume import ScoreBreakdownItem, ResumeAnalysis
+from app.services.text_utils import BULLET_LINE_RE
 
 EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
 PHONE_RE = re.compile(r"(\+?\d{1,3}[\s-]?)?\(?\d{3,4}\)?[\s-]?\d{3,4}[\s-]?\d{3,4}")
-BULLET_LINE_RE = re.compile(r"^\s*([•\-\*▪●]|(\d+[\.\)]))\s+")
 NUMBER_RE = re.compile(r"\d")
 
 SECTION_HEADERS = {

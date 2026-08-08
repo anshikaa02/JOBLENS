@@ -1,9 +1,16 @@
-# JobLens — Phase 1–7 (TypeScript + FastAPI)
+# JobLens — Phase 1–8 (TypeScript + FastAPI + Gemini)
 
-AI resume analyzer & job matcher. Covers Phases 1–7: setup, design system,
+AI resume analyzer & job matcher. Covers Phases 1–8: setup, design system,
 landing page, authentication (mocked), dashboard (mock data), Resume
-Analyzer (real, rule-based ATS scoring), and now **Job Matcher — real
-TF-IDF + cosine similarity, no mocking.**
+Analyzer (real, rule-based), Job Matcher (real, TF-IDF), and now
+**Career AI — real Gemini LLM calls: bullet-point rewrites, cover
+letters, and interview question prep.**
+
+## ⚠️ Career AI needs your own Gemini API key
+
+See `backend/README.md` → "Gemini API key" section. Free tier available at
+https://aistudio.google.com/apikey. Without it, the Career AI page returns
+a clear error but the rest of the app works fine.
 
 ## Two servers now run together
 
@@ -71,17 +78,20 @@ frontend/
 backend/
   app/
     main.py                    FastAPI app + CORS
+    config.py                  loads GEMINI_API_KEY / GEMINI_MODEL from .env
     routers/
       resume.py                POST /api/resume/analyze
       match.py                 POST /api/match/analyze
+      career_ai.py             POST /api/career-ai/{improve-bullets,cover-letter,interview-questions}
     services/
       pdf_parser.py            pdfplumber text extraction
       ats_scorer.py             rule-based scoring (see its docstring)
-      text_matcher.py          TF-IDF + cosine similarity (see its docstring
-                                 for why keyword ranking uses a SEPARATE
-                                 CountVectorizer, not the same TF-IDF matrix)
+      text_matcher.py          TF-IDF + cosine similarity (see its docstring)
+      text_utils.py            shared bullet-point extraction (used by ats_scorer AND gemini_client)
+      gemini_client.py         the only LLM calls in the app — see its docstring for why
     schemas/
-      resume.py, match.py       Pydantic models — the frontend/backend contract
+      resume.py, match.py, career_ai.py    Pydantic models — the frontend/backend contract
+  .env.example                 copy to .env and add your Gemini key
   requirements.txt
   README.md
 ```
